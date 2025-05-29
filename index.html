@@ -1,158 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
   <title>Análise de Ciclo Externo</title>
-  <link rel="manifest" href="manifest.json">
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      margin: 0; padding: 1rem;
-      background: #f2f2f2;
-      color: #333;
-    }
-    h1 {
-      text-align: center;
-      color: #444;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f7f8;
     }
     form {
-      max-width: 100%;
-      margin: auto;
       background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     label {
-      font-weight: bold;
       display: block;
-      margin-top: 1rem;
+      margin-top: 15px;
+      font-weight: 600;
     }
     input, select {
       width: 100%;
-      padding: 8px;
-      font-size: 1rem;
-      margin-top: 0.3rem;
+      padding: 10px;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 8px;
+      margin-top: 5px;
     }
     button {
-      margin-top: 1rem;
-      padding: 12px;
-      font-size: 1rem;
+      padding: 10px 15px;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 20px;
       width: 100%;
-      color: white;
     }
-    .verde { background-color: #4CAF50; }
-    .amarelo { background-color: #FFC107; }
-    .vermelho { background-color: #F44336; }
-    .timestamp {
-      margin-top: 0.3rem;
-      font-size: 0.9rem;
-      color: #555;
+    button#gravar { background-color: #4CAF50; color: white; }
+    button#enviar { background-color: #FFC107; color: white; }
+    button#limpar { background-color: #F44336; color: white; }
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      form { padding: 15px; }
     }
   </style>
 </head>
 <body>
-  <h1>Análise de Ciclo Externo</h1>
-  <form id="formulario">
+  <form id="cicloForm">
     <label>Frota</label>
     <input type="number" id="frota" required>
-    <select id="tipoFrota">
+    <label>Tipo</label>
+    <select id="tipo">
       <option value="Bemiado">Bemiado</option>
       <option value="Tremiado">Tremiado</option>
     </select>
-
-    <label>Motorista</label>
-    <input type="text" id="motorista" oninput="this.value = this.value.toUpperCase();" required>
-
+    <label>Marca/Modelo</label>
+    <select id="motorista" required>
+      <option value="VOLVO FH 540">VOLVO FH 540</option>
+      <option value="MB 3344">MB 3344</option>
+      <option value="SCANIA XT 560">SCANIA XT 560</option>
+    </select>
     <label>Odômetro Inicial</label>
-    <input type="number" id="odometroInicial">
-
+    <input type="number" id="odometroInicial" required>
     <label>Saída Balança Vazio</label>
-    <button type="button" class="verde" onclick="registrarHora('saidaBalanca')">Registrar Hora</button>
-    <div class="timestamp" id="saidaBalanca"></div>
-
+    <button type="button" onclick="registrarDataHora('saidaBalancaVazio')">Registrar Data/Hora</button>
+    <input type="text" id="saidaBalancaVazio" readonly>
     <label>Despacho</label>
     <input type="number" id="despacho">
-
     <label>Chegada Batedor</label>
-    <button type="button" class="amarelo" onclick="registrarHora('chegadaBatedor')">Registrar Hora</button>
-    <div class="timestamp" id="chegadaBatedor"></div>
-
+    <button type="button" onclick="registrarDataHora('chegadaBatedor')">Registrar Data/Hora</button>
+    <input type="text" id="chegadaBatedor" readonly>
     <label>Tipo de Carregamento</label>
     <select id="tipoCarregamento">
       <option value="Sobre Rodas">Sobre Rodas</option>
       <option value="Troca de Conjunto">Troca de Conjunto</option>
     </select>
-
     <label>Saída Batedor</label>
-    <button type="button" class="verde" onclick="registrarHora('saidaBatedor')">Registrar Hora</button>
-    <div class="timestamp" id="saidaBatedor"></div>
-
+    <button type="button" onclick="registrarDataHora('saidaBatedor')">Registrar Data/Hora</button>
+    <input type="text" id="saidaBatedor" readonly>
     <label>Chegada Balança Carregado</label>
-    <button type="button" class="amarelo" onclick="registrarHora('chegadaBalanca')">Registrar Hora</button>
-    <div class="timestamp" id="chegadaBalanca"></div>
-
+    <button type="button" onclick="registrarDataHora('chegadaBalanca')">Registrar Data/Hora</button>
+    <input type="text" id="chegadaBalanca" readonly>
     <label>Odômetro Final</label>
     <input type="number" id="odometroFinal">
-
-    <button type="button" class="verde" onclick="gravarDados()">Gravar Dados</button>
-    <button type="button" class="amarelo" onclick="enviarDados()">Enviar Dados</button>
-    <button type="button" class="vermelho" onclick="limparFormulario()">Limpar/Iniciar</button>
+    <button id="gravar" type="button" onclick="gravarDados()">Gravar Dados</button>
+    <button id="enviar" type="button" onclick="enviarDados()">Enviar Dados</button>
+    <button id="limpar" type="button" onclick="limparFormulario()">Limpar/Iniciar</button>
   </form>
-
   <script>
-    function registrarHora(id) {
-      const data = new Date().toLocaleString();
-      document.getElementById(id).textContent = data;
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+
+    function registrarDataHora(id) {
+      document.getElementById(id).value = new Date().toLocaleString();
     }
 
     function gravarDados() {
       const dados = {
         frota: document.getElementById('frota').value,
-        tipoFrota: document.getElementById('tipoFrota').value,
+        tipo: document.getElementById('tipo').value,
         motorista: document.getElementById('motorista').value,
         odometroInicial: document.getElementById('odometroInicial').value,
-        saidaBalanca: document.getElementById('saidaBalanca').textContent,
+        saidaBalancaVazio: document.getElementById('saidaBalancaVazio').value,
         despacho: document.getElementById('despacho').value,
-        chegadaBatedor: document.getElementById('chegadaBatedor').textContent,
+        chegadaBatedor: document.getElementById('chegadaBatedor').value,
         tipoCarregamento: document.getElementById('tipoCarregamento').value,
-        saidaBatedor: document.getElementById('saidaBatedor').textContent,
-        chegadaBalanca: document.getElementById('chegadaBalanca').textContent,
+        saidaBatedor: document.getElementById('saidaBatedor').value,
+        chegadaBalanca: document.getElementById('chegadaBalanca').value,
         odometroFinal: document.getElementById('odometroFinal').value
       };
-      localStorage.setItem("cicloExterno", JSON.stringify(dados));
-      alert("Dados gravados com sucesso!");
+      localStorage.setItem('cicloDados', JSON.stringify(dados));
+      alert("Dados salvos localmente.");
     }
 
     function enviarDados() {
-      const dados = JSON.parse(localStorage.getItem("cicloExterno"));
-      if (!dados) return alert("Nenhum dado para enviar.");
-
-      const url = "https://script.google.com/macros/s/AKfycbyeZ9_gWuGlp4H27WwUDfzf2bb1enjPTGIvXNuaWAuuJzYkuDAfkU3JL9kxHLZmqf9Xuw/exec"; 
-      fetch(url, {
+      const dados = JSON.parse(localStorage.getItem('cicloDados'));
+      if (!dados) return alert("Nenhum dado gravado.");
+      fetch("https://script.google.com/macros/s/AKfycbyeZ9_gWuGlp4H27WwUDfzf2bb1enjPTGIvXNuaWAuuJzYkuDAfkU3JL9kxHLZmqf9Xuw/exec", {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dados)
-      }).then(() => {
-        alert("Dados enviados com sucesso!");
-      }).catch(() => {
-        alert("Falha ao enviar os dados.");
       });
+      alert("Dados enviados.");
     }
 
     function limparFormulario() {
-      document.getElementById('formulario').reset();
-      ['saidaBalanca','chegadaBatedor','saidaBatedor','chegadaBalanca'].forEach(id => {
-        document.getElementById(id).textContent = "";
-      });
-      localStorage.removeItem("cicloExterno");
+      localStorage.removeItem('cicloDados');
+      document.getElementById("cicloForm").reset();
     }
   </script>
 </body>
